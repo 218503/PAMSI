@@ -1,0 +1,6 @@
+|   Czas 23791us
+|   Rozmiar tablicy 1000 elementow
+|   Czas 75229us
+|   Rozmiar tablicy 10000 elementow
+|   Czas 28922us
+|   Rozmiar tablicy 100000 elementow
