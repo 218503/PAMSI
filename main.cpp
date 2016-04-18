@@ -7,7 +7,6 @@ class element{
 public:
   int wartosc;
   int *lewy, *prawy;
-
 };
 
 class drzewo{
