@@ -1,0 +1,23 @@
+rozmiar: 1000
+1.czas wypelniania: 0s 15ms 651us
+1.czas wyszukiwania: 0s 0ms 27us
+2.czas wypelniania: 0s 10ms 309us
+2.czas wyszukiwania: 0s 0ms 17us
+3.czas wypelniania: 0s 36ms 171us
+3.czas wyszukiwania: 0s 0ms 58us
+
+rozmiar: 10000
+1.czas wypelniania: 2s 154ms 803us
+1.czas wyszukiwania: 0s 0ms 395us
+2.czas wypelniania: 2s 199ms 65us
+2.czas wyszukiwania: 0s 0ms 392us
+3.czas wypelniania: 2s 193ms 39us
+3.czas wyszukiwania: 0s 0ms 374us
+
+rozmiar: 100000
+1.czas wypelniania:
+1.czas wyszukiwania:
+2.czas wypelniania: 
+2.czas wyszukiwania:
+3.czas wypelniania: 
+3.czas wyszukiwania: 
