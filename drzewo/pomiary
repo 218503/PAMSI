@@ -15,9 +15,9 @@ rozmiar: 10000
 3.czas wyszukiwania: 0s 0ms 374us
 
 rozmiar: 100000
-1.czas wypelniania:
-1.czas wyszukiwania:
-2.czas wypelniania: 
-2.czas wyszukiwania:
-3.czas wypelniania: 
-3.czas wyszukiwania: 
+1.czas wypelniania: 220s 102ms 130u
+1.czas wyszukiwania: 0s 7ms 881us
+2.czas wypelniania: 237s 10ms 775us
+2.czas wyszukiwania: 0s 8ms 429us
+3.czas wypelniania: 219s 37ms 396us
+3.czas wyszukiwania: 0s 3ms 511us
