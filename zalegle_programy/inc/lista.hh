@@ -3,41 +3,93 @@
 
 #include "tablica.hh"
 
+  /*!
+   * \brief 
+   */
 template <class typ>
-class itablica{
+class ilista{
   public:
+  /*!
+   * \brief 
+   */
   virtual void push_front(typ)=0;
+   /*!
+   * \brief 
+   */
   virtual void push_back(typ)=0;
+    /*!
+   * \brief 
+   */
   virtual void insert(typ,int)=0;
-  virtual void pop_front(typ)=0;
-  virtual void pop_back(typ)=0;
+  /*!
+   * \brief 
+   */
+  virtual typ pop_front()=0;
+  /*!
+   * \brief 
+   */
+  virtual typ pop_back()=0;
+  /*!
+   * \brief 
+   */
   virtual bool empty()=0;
+  /*!
+   * \brief 
+   */
   virtual int size()=0;
+  virtual void display()=0;
+  virtual void remove()=0;
 };
 
-
+  /*!
+   * \brief 
+   */
 template <class typ>
-class lista : public itablica<typ> {
+class lista : public ilista<typ> {
 private:
   itab<typ> * tabl=new tab<typ>;
 public:
-  virtual void push_front(typ);
-  virtual void push_back(typ);
-  virtual void insert(typ,int);
+  /*!
+   * \brief 
+   */
+  virtual void push_front(typ element);
+  /*!
+   * \brief 
+   */
+  virtual void push_back(typ element);
+  /*!
+   * \brief 
+   */
+  virtual void insert(typ element,int pozycja);
+  /*!
+   * \brief 
+   */
   virtual typ pop_front();
+  /*!
+   * \brief 
+   */
   virtual typ pop_back();
+  /*!
+   * \brief 
+   */
   virtual bool empty(); 
+  /*!
+   * \brief 
+   */
   virtual int size();
+  virtual void display();
+  virtual void remove();
+
 };
 
 template <class typ>
 void lista<typ>::push_front(typ element){
-  tabl->push_front(element);
+  
 }
 
 template <class typ>
 void lista<typ>::push_back(typ element){
-  tabl->push_back(element);
+  tabl->push_back_x2(element);
 }
 
 template <class typ>
@@ -57,7 +109,7 @@ typ lista<typ>::pop_back(){
 
 template <class typ>
 bool lista<typ>::empty(){
-  return tabl->is_empty;
+  return tabl->is_empty();
 }
 
 template <class typ>
@@ -65,4 +117,15 @@ int lista<typ>::size(){
   return tabl->size();
 }
 
+
+template <class typ>
+void lista<typ>::display(){
+  tabl->display();
+}
+
+template <class typ>
+void lista<typ>::remove(){
+  tabl->remove();
+}
 #endif
+
