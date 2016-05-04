@@ -217,7 +217,7 @@ template <class typ>
 void tab<typ>::display(){
   int j;
   for(j=0;j<l_elementow;j++){
-    if(j<l_elementow) cout<<wsk[j]<<"  "; 
+    if(j<l_elementow) cout<<wsk[j]<<" "; 
     if(j%15==0)   cout<<endl;
   }
   cout<<endl;

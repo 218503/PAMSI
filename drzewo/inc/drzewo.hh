@@ -15,26 +15,37 @@ class element{
 public:
   element *rodzic=NULL,*lewy=NULL,*prawy=NULL;
   int zawartosc;
+
 };
 
-class drzewo{
+class drzewo : public element{
+private:
+  element *el;
 public:
   itab<int> * tabl;
   int i=0,j;
   
+  
+  drzewo(){
+    el=NULL;
+  }
+
+  element *& korzen(){
+    return el;
+
+  }
   void generator(int l){
     tabl=new tab<int>[l];
     int i,x;
     srand(time(NULL));
     for(i=0;i<l;i++){
-      x=1+(rand()%10000000);
+      x=1+(rand()%10000);
       tabl->push_back_x2(x);}
     tabl->QS(0,l-1);
-    cout<<"zawartosc tablicy"<<endl;
-    tabl->display();
   }
   
   void wstaw(element *&el,int k){
+
     if(el==NULL){
       el=new element;
       el->zawartosc=k;
@@ -42,24 +53,41 @@ public:
       el->prawy=NULL;
     }
     else{
-      if(k>el->zawartosc) wstaw(el->prawy,k);
-      if(k<el->zawartosc) wstaw(el->lewy,k);
+      if(k>el->zawartosc){
+	if((el->lewy==NULL)&&(el->prawy!=NULL)){
+	  wstaw(el->lewy,el->zawartosc);
+	  el->zawartosc=el->prawy->zawartosc;
+	 el->prawy->zawartosc=k;}
+	else{
+	  wstaw(el->prawy,k);}
+      }
+      if(k<el->zawartosc){
+	if((el->prawy==NULL)&&(el->lewy!=NULL)){
+	  wstaw(el->prawy,el->zawartosc);
+	  el->zawartosc=el->lewy->zawartosc;
+	  el->lewy->zawartosc=k; 
+	}
+	else{
+	  wstaw(el->lewy,k);}
+      }
+      
     }
   }
-   
+  
   void preorder(element *el){
     if(el!=NULL){
-      cout<<el->zawartosc<<"  ";
+      cout<<el->zawartosc<<" ";
       preorder(el->lewy);
       preorder(el->prawy);
     }
   }
   
   void inorder(element *el){
-    if(el!=NULL){
+  if(el!=NULL){
       inorder(el->lewy);
-      cout<<el->zawartosc<<"  ";
+      cout<<el->zawartosc<<" ";
       inorder(el->prawy);
+      
     }
   }
 
@@ -71,7 +99,7 @@ public:
     }
   }
   
-  void wypelnij(element *&el){
+  void wypelnij(element *el){
     if(el!=NULL){
       wypelnij(el->lewy);
       el->zawartosc=tabl->pop_0(i);
@@ -84,10 +112,10 @@ public:
   element *wyszukaj(element *el,int k){
     if(el==NULL||el->zawartosc==k) return el;
     if(k<el->zawartosc) {
-      return wyszukaj(el->lewy,k);}
+      return wyszukaj(el,k);}
     else{
       if(k>el->zawartosc){
-	return wyszukaj(el->prawy,k);}
+	return wyszukaj(el,k);}
     }
     return NULL;
   }
