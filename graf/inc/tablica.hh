@@ -70,6 +70,8 @@ public:
   /*!
    * \brief Zamienia dwa elementy miejscami.
    */
+
+  virtual bool search(int)=0;
   virtual void swap(int , int)=0;
   /*!
    * \brief Szybkie sortowanie tablicy.
@@ -164,6 +166,9 @@ public:
    * \brief Sprawdza czy tablica jest pusta.
    */
   virtual bool is_empty();
+
+
+  virtual bool search(int s);
 
   /*!
    * \brief Zamienia wskazane elementy miejscami.
@@ -358,6 +363,17 @@ bool tab<typ>::is_empty(){
   if(l_elementow==0) { return true;}
   return false;
 }
+
+template <class typ>
+bool tab<typ>::search(int s){
+  
+  for(int i=0;i<l_elementow;i++){
+    if(wsk[i]==s) {return true;
+    }
+  }
+  return false;
+}
+
 
 template <class typ>
 void tab<typ>::swap(int x1, int x2){

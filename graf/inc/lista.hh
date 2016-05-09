@@ -36,6 +36,7 @@ class ilista{
   /*!
    * \brief 
    */
+  virtual bool search(int)=0;
   virtual int size()=0;
   virtual void display()=0;
   virtual void remove()=0;
@@ -76,6 +77,7 @@ public:
   /*!
    * \brief 
    */
+  virtual bool search(int x);
   virtual int size();
   virtual void display();
   virtual void remove();
@@ -111,6 +113,11 @@ typ lista<typ>::pop_back(){
 template <class typ>
 bool lista<typ>::empty(){
   return tabl->is_empty();
+}
+
+template <class typ>
+bool lista<typ>::search(int x){
+  return tabl->search(x);
 }
 
 template <class typ>
