@@ -32,6 +32,9 @@ class ilista{
   /*!
    * \brief 
    */
+
+  virtual typ check_value(int )=0;
+
   virtual bool empty()=0;
   /*!
    * \brief 
@@ -40,6 +43,7 @@ class ilista{
   virtual int size()=0;
   virtual void display()=0;
   virtual void remove()=0;
+  virtual void BS()=0;
 };
 
   /*!
@@ -73,6 +77,8 @@ public:
   /*!
    * \brief 
    */
+
+  virtual typ check_value(int x);
   virtual bool empty(); 
   /*!
    * \brief 
@@ -81,6 +87,7 @@ public:
   virtual int size();
   virtual void display();
   virtual void remove();
+  virtual void BS();
 
 };
 
@@ -116,6 +123,11 @@ bool lista<typ>::empty(){
 }
 
 template <class typ>
+typ lista<typ>::check_value(int x){
+  return tabl->return_value(x);
+}
+
+template <class typ>
 bool lista<typ>::search(int x){
   return tabl->search(x);
 }
@@ -134,6 +146,11 @@ void lista<typ>::display(){
 template <class typ>
 void lista<typ>::remove(){
   tabl->remove();
+}
+
+template <class typ>
+void lista<typ>::BS(){
+  tabl->BS();
 }
 #endif
 

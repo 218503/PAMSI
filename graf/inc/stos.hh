@@ -8,27 +8,35 @@ template <class typ>
 class istos{
 public:
   /*!
-   * \brief 
+   * \brief Zdejmuje element ze stosu i zwraca jego wartosc.
    */
   virtual typ pop()=0; 
 
   /*!
-   * \brief 
+   * \brief Wstawia element na poczatek stosu.
    */
   virtual void push(typ)=0;
 
   /*!
-   * \brief 
+   * \brief Zwraca rozmiar stosu.
    */
   virtual int size()=0;
 
   /*!
-   * \brief 
+   * \brief Sprawdza czy stos jest pusty.
    */
   virtual bool empty()=0; 
-  
+
+  /*!
+   * \brief Wyswietla stos.
+   *
+   */
   virtual void display()=0;
 
+  /*!
+   * \brief Usuwa stos. 
+   *
+   */
   virtual void remove()=0;
 };
 
@@ -40,27 +48,37 @@ private:
   itab<typ> * tabl=new tab<typ>;
 public:
   /*!
-   * \brief 
+   * \brief Zdejmuje element ze stosu i zwraca jego zawartosc.
    */
   virtual typ pop();
 
   /*!
-   * \brief 
+   * \brief Wstawia element na stos.
+   *
+   * \param[in] element element do wstawienia na stos.
    */
   virtual void push(typ element);
 
   /*!
-   * \brief 
+   * \brief Zwraca rozmiar stosu.
    */
   virtual int size();
 
   /*!
-   * \brief 
+   * \brief Zwraca informacje czy stos jest pusty.
+   *
+   * \return true jesli stos jest pusty, false jesli nie jest.
    */
   virtual bool empty();
-  
+  /*!
+   * \brief Wyswietla stos.
+   *
+   */
   virtual void display();
-
+  /*!
+   * \brief Usuwa stos
+   *
+   */
   virtual void remove();
 };
 

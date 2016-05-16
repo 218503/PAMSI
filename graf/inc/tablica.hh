@@ -54,6 +54,8 @@ public:
   /*!
    * \brief Zwraca rozmiar tablicy.
    */
+
+  virtual typ return_value(int)=0;
   virtual int size()=0;
   /*!
    * \brief Usuwa tablice.
@@ -147,6 +149,7 @@ public:
    */
   virtual typ pop_0(int pozycja);
 
+  virtual typ return_value(int x);
 
   /*!
    * \brief Zwraca rozmiar tablicy.
@@ -329,6 +332,11 @@ typ tab<typ>::pop_0(int pozycja){
   typ element=wsk[pozycja];
   wsk[pozycja]=0;
   return element;
+}
+
+template <class typ>
+typ tab<typ>::return_value(int x){
+  return wsk[x];
 }
 
 template <class typ>
