@@ -80,16 +80,24 @@ public:
    *
    */
   virtual void remove();
+
+  stos(){
+    tabl=new tab<typ>;
+  }
+  
+  stos(int a){
+    tabl=new tab<typ>(a);
+  }
 };
 
 template <class typ>
 typ stos<typ>::pop(){
-  return tabl->pop_front();
+  return tabl->pop_back();
 }
 
 template <class typ>
 void stos<typ>::push(typ element){
-  tabl->insert(element,0); //taki "push_front"
+  tabl->push_back_x2(element);
 }
 
 template <class typ>

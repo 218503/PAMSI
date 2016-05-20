@@ -3,15 +3,13 @@
 
 #include "lista.hh"
 #include "tablica.hh"
+#include "kolejka.hh"
 #include "irunn.hh"
 #include "stos.hh"
 #include <cstdlib>
 #include <ctime>
 
 using namespace std;
-// typedef ilista<int> illista;
-// typedef lista<int> llista;
-
 
 // class wierzcholek{
 // public:
@@ -19,7 +17,6 @@ using namespace std;
 //   int zawartosc;
 //   wierzcholek &operator=(const wierzcholek &w);
 //   wierzcholek &operator=(const int &x);
-
 // };
 
 /*!
@@ -91,7 +88,7 @@ class graf : public igraf{
   int k; 
   lista<krawedz> *w; /*!< Tablica list krawedzi, indeks tablicy jest rownoczesnie numerem wierzcholka */
   int max=0; /*!< Maksymalna zdefiniowana liczba wierzcholkow, dla ktorych zostala zaalokowana pamiec  */
-  int lw; /*!< Aktualna liczba wierzcholkow w grafie */
+  int lw=0; /*!< Aktualna liczba wierzcholkow w grafie */
 public:
   /*!
    * \brief Dodaje wierzcholek.
@@ -132,13 +129,21 @@ public:
    */
   virtual int size();
 
-  graf(int m){
+  // graf(int m){
+  //   srand(time(NULL));
+  //   lw=0;
+  //   max=m;
+  //   w=new lista<krawedz>[m];
+
+  // }
+  graf(int a){
     srand(time(NULL));
     lw=0;
-    max=m;
-    w=new lista<krawedz>[m];
-
-     }
+    max=a;
+    delete []w;
+    w=new lista<krawedz>[a];
+   
+  }
 };
 
 
@@ -164,34 +169,23 @@ void graf::dodaj_wierzcholek(){
 
 
 void graf::dodaj_krawedz(int w1, int w2,int waga){
-  // int x;
-  // for(int i=0;i<w[w1].size();i++){
-  //   x=w[w1]
-  //   if(x!=w1)
-  if(!w[w1].search(w2)){
+  if(!w[w1].search(w2)&&w1!=w2){
   krawedz k(w2,waga);
   w[w1].push_back(k);
   w[w1].BS();
   }
-  if(!w[w2].search(w1)){
+  if(!w[w2].search(w1)&&w1!=w2){
   krawedz k2(w1,waga);
   w[w2].push_back(k2);
   w[w2].BS();
   }
-  
-}
-
-
-void graf::sasiadujace_wierzcholki(int nr){
-  
-
 }
 
 
 void graf::sasiadujace_krawedzie(int nr){
-  //  cout<<"Sasiedzi wierzcholka nr "<<nr<<" :"<<endl;
-  //  w[nr].display();
-  //  cout<<"______________________________"<<endl;
+    cout<<"Sasiedzi wierzcholka nr "<<nr<<" :"<<endl;
+    w[nr].display();
+    cout<<"______________________________"<<endl;
 }
 
 int graf::liczba_sasiadow(int i){
@@ -303,8 +297,9 @@ bool operator==(const krawedz &k, const int &x){
 class test_grafu : public irunable{
 private:
   igraf *g;
-  int liczba_wierzcholkow=0;
-  stos<int> s;
+  int liczba_wierzcholkow=0,liczba_krawedzi=0;
+  istos<int> *s=new stos<int>;//(liczba_wierzcholkow);
+  ikolejka<int> *k=new kolejka<int>;
   bool *odwiedzony;
   int counter=0;
 public:
@@ -322,6 +317,7 @@ public:
     /*!
    * \brief Przygotowanie grafu do testu.
    *
+   * Tworzy graf o zadanej w konstruktorze liczbie wierzcholkow, a nastepnie losuje, ktore wierzcholki maja byc polaczone.
    */
   virtual bool prepare();
   /*!
@@ -342,84 +338,100 @@ public:
    */
   int BFS(int o);
  
-  test_grafu(int a){
+  // a liczba wierzcholkow, b liczba krawedzi dla wierzcholka
+  test_grafu(int a, int b){
     liczba_wierzcholkow=a;
-    g=new graf(a);
-    odwiedzony=new bool[g->size()];
-    for(int i=0;i<g->size();i++) odwiedzony[i]=false;
-  
+    liczba_krawedzi=b;
+    g=new graf(liczba_wierzcholkow);
+    odwiedzony=new bool[liczba_wierzcholkow];
+    for(int i=0;i<liczba_wierzcholkow;i++) odwiedzony[i]=false;
+    
   }
 };
 
 void test_grafu::dodaj_wierzcholki(int l){
   for(int w=0;w<l;w++){
-    g->dodaj_wierzcholek();}
+    g->dodaj_wierzcholek();
+    //if(w%10==0) cout<<w<<endl;
+  }
 }
 
 void test_grafu::polacz(){
   int kk;
   for(int i=0;i<liczba_wierzcholkow;i++){
-    for(int j=0;j<liczba_wierzcholkow/2;j++){
+    for(int j=0;j<liczba_krawedzi;j++){
       kk=rand()%liczba_wierzcholkow;
-      g->dodaj_krawedz(i,kk,1);
-      //cout<<kk<<endl;
+      if((kk<liczba_wierzcholkow)&&(kk!=i)) g->dodaj_krawedz(i,kk,1);
     }
-    
+    //cout<<"Polaczono "<<i<<endl;
   }
-}
-
-
-bool test_grafu::prepare(){
-  srand(time(NULL));
-  dodaj_wierzcholki(liczba_wierzcholkow);
-  polacz();
-  return true;
 }
 
 int test_grafu::DFS(int o){
-  int i;
-  
+  int i=0;
   odwiedzony[o]=true;
+  counter++;
   // cout<<"Odwiedzony "<<o<<endl;
   for(i=0;i<g->liczba_sasiadow(o);i++){
-    s.push(g->sasiad(o,i));
+    s->push(g->sasiad(o,i));
   }
-  counter++;
-  while(!s.empty()){
-    i=s.pop();
+  while(!s->empty()){
+    i=s->pop();
     if(!odwiedzony[i]) DFS(i);
-   
   }
-
   return 0;
 }
 
 int test_grafu::BFS(int o){
-  
-  
+  int i;
+  // cout<<"ODWIEDZONY "<<o<<endl;
+  counter++;
+  odwiedzony[o]=true;
+  k->push(o);
+  for(i=0;i<g->liczba_sasiadow(o);i++){
+    if(!odwiedzony[g->sasiad(o,i)]) k->push(g->sasiad(o,i));
+  }
+  while(!k->empty()){
+    k->pop();
+    if(!odwiedzony[k->check_value(0)]){BFS(k->check_value(0));}  
+  }
   return 0;
 }
 
+bool test_grafu::prepare(){
+  srand(time(NULL));
+  dodaj_wierzcholki(liczba_wierzcholkow);
+  cout<<"Dodano wierzcholki"<<endl;
+  polacz();
+  return true;
+}
+
+
 bool test_grafu::run(){
 
-
-  for(int i=0;i<g->size();i++){
-    g->sasiadujace_krawedzie(i);  
-  }
+  // for(int i=0;i<g->size();i++){
+  //   g->sasiadujace_krawedzie(i);  
+  // }
   // g->dodaj_krawedz(1,4,1);
   // cout<<"Dodano krawedz"<<endl;
   // cout<<"--OGOLEM--"<<endl;
   // for(int i=0;i<g->size();i++){
   //   g->sasiadujace_krawedzie(i);  
   // }
-  cout<<"--DFS--"<<endl;
-  DFS(10);
-  if(counter==g->size())
-    {cout<<"Graf spojny counter==g.size()"<<endl;}
-  else
-    {cout<<"Graf niespojny counter!=g.size()"<<endl;}
-  cout<<"counter= "<<counter<<endl;
-  cout<<"g.size()= "<<g->size()<<endl;
+
+  
+  BFS(0);
+
+  // cout<<"counter= "<<counter<<endl;
+  // cout<<"g.size()= "<<g->size()<<endl;
+  // if(counter==g->size())
+  //   {cout<<"Graf spojny counter==g.size()"<<endl;}
+  // else
+  //   {cout<<"Graf niespojny counter!=g.size()"<<endl;}
+  // cout<<"ODWIEDZONE:"<<endl;
+  // for(int i=1;i<g->size()+1;i++) {
+  //   if(odwiedzony[i-1]) cout<<i-1<<"  ";
+  //   if(i%10==0) cout<<endl;}
    return true;
 }
 

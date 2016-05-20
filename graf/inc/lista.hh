@@ -52,7 +52,7 @@ class ilista{
 template <class typ>
 class lista : public ilista<typ> {
 private:
-  itab<typ> * tabl=new tab<typ>;
+  itab<typ> * tabl;
 public:
   /*!
    * \brief 
@@ -88,7 +88,12 @@ public:
   virtual void display();
   virtual void remove();
   virtual void BS();
-
+  lista(int a){
+    tabl=new tab<typ>(a);
+  }
+  lista(){
+    tabl=new tab<typ>(1);
+  }
 };
 
 template <class typ>

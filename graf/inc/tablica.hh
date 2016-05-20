@@ -98,6 +98,7 @@ public:
    * \brief Konstruktor bezparametryczny.
    */
   tab(){  
+    rozmiar_tablicy=5;
     l_elementow=0;
     wsk=new typ[5];}
 
@@ -105,7 +106,9 @@ public:
    * \brief Konstruktor parametryczny.
    */
   tab(int x){
+    
     wsk=new typ[x];
+    rozmiar_tablicy=x;
   }
 
   /*!
@@ -217,7 +220,7 @@ template <class typ>
 void tab<typ>::push_back_x2(typ element){
   typ *tablica=NULL; //tablica pomocnicza 
   int j;
-    if(l_elementow<5){
+    if(l_elementow<rozmiar_tablicy){
       wsk[l_elementow]=element;
       l_elementow++;
     }
@@ -301,10 +304,11 @@ template <class typ>
 typ tab<typ>::pop_front(){
   int i;
   typ front=wsk[0];
+  l_elementow-=1;
   for(i=0;i<l_elementow;i++){
     wsk[i]=wsk[i+1];
   }
-  l_elementow-=1;
+  //l_elementow-=1;
   return front;
 }
 

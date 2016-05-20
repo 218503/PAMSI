@@ -28,6 +28,7 @@ public:
   /*!
    * \brief 
    */
+  virtual int check_value(int)=0;
   virtual int size()=0;
 
   virtual void display()=0;
@@ -40,7 +41,7 @@ public:
 template <class typ>
 class kolejka : public ikolejka<typ>{
 private:
-  itab<typ> * tabl=new tab<typ>;
+  itab<typ> * tabl;
 public:
   /*!
    * \brief 
@@ -60,11 +61,18 @@ public:
   /*!
    * \brief 
    */
+  virtual int check_value(int x);
   virtual int size();
 
   virtual void display();
   
   virtual void remove();  
+  kolejka(){
+    tabl=new tab<typ>;
+  }
+  kolejka(int a){
+    tabl=new tab<typ>(a);
+  }
 };
  
 template <class typ>
@@ -77,6 +85,12 @@ void kolejka<typ>::push(typ element){
   tabl->push_back_x2(element);
 }
  
+
+
+template <class typ>
+int kolejka<typ>::check_value(int x){
+  return tabl->return_value(x);
+}
 template <class typ>
 int kolejka<typ>::size(){
   return tabl->size();
