@@ -75,6 +75,7 @@ public:
    * \brief Zwraca rozmiar drzewa.
    *
    */
+  virtual void remove()=0;
   virtual int size()=0;
 };
 
@@ -129,6 +130,9 @@ public:
    */
   virtual int size();
 
+  virtual void remove(){
+    delete [] w;
+  }
   // graf(int m){
   //   srand(time(NULL));
   //   lw=0;
@@ -142,28 +146,31 @@ public:
     max=a;
     delete []w;
     w=new lista<krawedz>[a];
-   
   }
+
+  
 };
 
 
 void graf::dodaj_wierzcholek(){
-  lista<krawedz> *p=new lista<krawedz>[lw+1]; 
+  // lista<krawedz> *p=new lista<krawedz>[lw+1]; 
   if(lw<max){
-    for(int j=0;j<lw;j++){
-      for(int i=0;i<w[j].size();i++){
-	p[j]=w[j];
-      }
-    }  
-    delete [] w;
+    // for(int j=0;j<lw;j++){
+    //     for(int i=0;i<w[j].size();i++){
+    // 	p[j]=w[j];
+    // 		}
+    // }  
+    // delete [] w;
+    // lw++;
+    // w=new lista<krawedz>[lw+1];
+    // for(int j=0;j<lw;j++){
+    //    for(int i=0;i<p[j].size();i++){
+    // 	w[j]=p[j];	
+    // 	}
+    // }
+
     lw++;
-    w=new lista<krawedz>[lw+1];
-    for(int j=0;j<lw;j++){
-      for(int i=0;i<p[j].size();i++){
-	w[j]=p[j];	
-      }
-    }
-    delete [] p;
+    //  delete [] p;
   }
 }
 
@@ -246,6 +253,181 @@ bool operator==(const krawedz &k, const int &x){
   return false;
 }
 
+
+/*!
+ * \brief Test grafu
+ *
+ */
+class test_grafu : public irunable{
+private:
+  igraf *g;
+  int liczba_wierzcholkow=0,liczba_krawedzi=0;
+  istos<int> *s=new stos<int>;//(liczba_wierzcholkow);
+  ikolejka<int> *k;
+  bool *odwiedzony;
+  int counter=0;
+public:
+  /*!
+   * \brief Dodanie wierzcholkow do grafu.
+   *
+   * \param[in] l liczba wierzcholkow do dodania.
+   */
+  void dodaj_wierzcholki(int l); 
+  /*!
+   * \Laczenie wierzcholkow z wybranymi losowo innymi wierzcholkami.
+   *
+   */
+  void polacz();
+    /*!
+   * \brief Przygotowanie grafu do testu.
+   *
+   * Tworzy graf o zadanej w konstruktorze liczbie wierzcholkow, a nastepnie losuje, ktore wierzcholki maja byc polaczone.
+   */
+  virtual bool prepare();
+  /*!
+   * \brief Test grafu.
+   *
+   */
+  virtual bool run();
+
+  /*!
+   * \brief Zwalnia pamiec.
+   *
+   * 
+   */
+  virtual void remove();
+
+  /*!
+   * \brief Przejscie DFS.
+   *
+   * \param[in] o wierzcholek poczatkowy.
+   */
+
+
+  int DFS(int o);
+  /*!
+   * \brief Przejscie BFS.
+   *
+   * param[in] o wierzcholek poczatkowy.
+   */
+  int BFS(int o);
+ 
+  // a liczba wierzcholkow, b liczba krawedzi dla wierzcholka
+  test_grafu(int a, int b){
+    liczba_wierzcholkow=a;
+    liczba_krawedzi=b;
+    g=new graf(liczba_wierzcholkow);
+    odwiedzony=new bool[liczba_wierzcholkow];
+    for(int i=0;i<liczba_wierzcholkow;i++) odwiedzony[i]=false;
+    k=new kolejka<int>[liczba_wierzcholkow];
+  }
+};
+
+void test_grafu::dodaj_wierzcholki(int l){
+  for(int w=0;w<l;w++){
+    g->dodaj_wierzcholek();
+    // if(w%10==0) cout<<w<<endl;
+  }
+}
+
+void test_grafu::polacz(){
+  int kk,j;
+  for(int i=0;i<liczba_wierzcholkow;i++){
+    j=0;
+    while(j<liczba_krawedzi){
+
+      kk=rand()%liczba_wierzcholkow;
+      if((kk<liczba_wierzcholkow)&&(kk!=i)&&(g->liczba_sasiadow(kk)<liczba_krawedzi)&&(g->liczba_sasiadow(i)<liczba_krawedzi))
+	{g->dodaj_krawedz(i,kk,1);
+	  
+	}
+      j++;
+    }
+  }
+}
+
+int test_grafu::DFS(int o){
+  int i=0;
+  odwiedzony[o]=true;
+  counter++;
+  // cout<<"Odwiedzony "<<o<<endl;
+  for(i=0;i<g->liczba_sasiadow(o);i++){
+    s->push(g->sasiad(o,i));
+  }
+  while(!s->empty()){
+    i=s->pop();
+    if(!odwiedzony[i]) DFS(i);
+  }
+  return 0;
+}
+
+int test_grafu::BFS(int o){
+  int i;
+  //cout<<"ODWIEDZONY "<<o<<endl;
+  //counter++;
+  odwiedzony[o]=true;
+  k->push(o);
+  for(i=0;i<g->liczba_sasiadow(o);i++){
+    if(!odwiedzony[g->sasiad(o,i)]) k->push(g->sasiad(o,i));
+  }
+  while(!k->empty()){
+    k->pop();
+    if(!odwiedzony[k->check_value(0)]){BFS(k->check_value(0));}
+  }
+  return 0;
+}
+
+bool test_grafu::prepare(){
+  srand(time(NULL));
+  dodaj_wierzcholki(liczba_wierzcholkow);
+  cout<<"Dodano wierzcholki"<<endl;
+  polacz();
+  return true;
+}
+
+
+bool test_grafu::run(){
+
+    // for(int i=0;i<g->size();i++){
+    //   g->sasiadujace_krawedzie(i);  
+    // }
+  // g->dodaj_krawedz(1,4,1);
+  // cout<<"Dodano krawedz"<<endl;
+  // cout<<"--OGOLEM--"<<endl;
+  // for(int i=0;i<g->size();i++){
+  //   g->sasiadujace_krawedzie(i);  
+  // }
+
+  
+  DFS(0);
+
+  // cout<<"counter= "<<counter<<endl;
+  // cout<<"g.size()= "<<g->size()<<endl;
+  // if(counter==g->size())
+  //   {cout<<"Graf spojny counter==g.size()"<<endl;}
+  // else
+  //   {cout<<"Graf niespojny counter!=g.size()"<<endl;}
+  // cout<<"ODWIEDZONE:"<<endl;
+  // for(int i=1;i<g->size()+1;i++) {
+  //   if(odwiedzony[i-1]) cout<<i-1<<"  ";
+  //   if(i%10==0) cout<<endl;}
+   return true;
+}
+
+void test_grafu::remove(){
+
+  g->remove();
+  delete [] s;
+  delete [] k;
+  delete [] g;
+  delete [] odwiedzony;
+}
+#endif
+
+
+
+
+
 // wierzcholek & wierzcholek::operator = (const int & x){
 //   zawartosc=x;
 //   return *this;
@@ -289,151 +471,3 @@ bool operator==(const krawedz &k, const int &x){
 //   if(w.zawartosc<x){return true;}
 //   return false;
 // }
-
-/*!
- * \brief Test grafu
- *
- */
-class test_grafu : public irunable{
-private:
-  igraf *g;
-  int liczba_wierzcholkow=0,liczba_krawedzi=0;
-  istos<int> *s=new stos<int>;//(liczba_wierzcholkow);
-  ikolejka<int> *k=new kolejka<int>;
-  bool *odwiedzony;
-  int counter=0;
-public:
-  /*!
-   * \brief Dodanie wierzcholkow do grafu.
-   *
-   * \param[in] l liczba wierzcholkow do dodania.
-   */
-  void dodaj_wierzcholki(int l); 
-  /*!
-   * \Laczenie wierzcholkow z wybranymi losowo innymi wierzcholkami.
-   *
-   */
-  void polacz();
-    /*!
-   * \brief Przygotowanie grafu do testu.
-   *
-   * Tworzy graf o zadanej w konstruktorze liczbie wierzcholkow, a nastepnie losuje, ktore wierzcholki maja byc polaczone.
-   */
-  virtual bool prepare();
-  /*!
-   * \brief Test grafu.
-   *
-   */
-  virtual bool run();
-  /*!
-   * \brief Przejscie DFS.
-   *
-   * \param[in] o wierzcholek poczatkowy.
-   */
-  int DFS(int o);
-  /*!
-   * \brief Przejscie BFS.
-   *
-   * param[in] o wierzcholek poczatkowy.
-   */
-  int BFS(int o);
- 
-  // a liczba wierzcholkow, b liczba krawedzi dla wierzcholka
-  test_grafu(int a, int b){
-    liczba_wierzcholkow=a;
-    liczba_krawedzi=b;
-    g=new graf(liczba_wierzcholkow);
-    odwiedzony=new bool[liczba_wierzcholkow];
-    for(int i=0;i<liczba_wierzcholkow;i++) odwiedzony[i]=false;
-    
-  }
-};
-
-void test_grafu::dodaj_wierzcholki(int l){
-  for(int w=0;w<l;w++){
-    g->dodaj_wierzcholek();
-    //if(w%10==0) cout<<w<<endl;
-  }
-}
-
-void test_grafu::polacz(){
-  int kk;
-  for(int i=0;i<liczba_wierzcholkow;i++){
-    for(int j=0;j<liczba_krawedzi;j++){
-      kk=rand()%liczba_wierzcholkow;
-      if((kk<liczba_wierzcholkow)&&(kk!=i)) g->dodaj_krawedz(i,kk,1);
-    }
-    //cout<<"Polaczono "<<i<<endl;
-  }
-}
-
-int test_grafu::DFS(int o){
-  int i=0;
-  odwiedzony[o]=true;
-  counter++;
-  // cout<<"Odwiedzony "<<o<<endl;
-  for(i=0;i<g->liczba_sasiadow(o);i++){
-    s->push(g->sasiad(o,i));
-  }
-  while(!s->empty()){
-    i=s->pop();
-    if(!odwiedzony[i]) DFS(i);
-  }
-  return 0;
-}
-
-int test_grafu::BFS(int o){
-  int i;
-  // cout<<"ODWIEDZONY "<<o<<endl;
-  counter++;
-  odwiedzony[o]=true;
-  k->push(o);
-  for(i=0;i<g->liczba_sasiadow(o);i++){
-    if(!odwiedzony[g->sasiad(o,i)]) k->push(g->sasiad(o,i));
-  }
-  while(!k->empty()){
-    k->pop();
-    if(!odwiedzony[k->check_value(0)]){BFS(k->check_value(0));}  
-  }
-  return 0;
-}
-
-bool test_grafu::prepare(){
-  srand(time(NULL));
-  dodaj_wierzcholki(liczba_wierzcholkow);
-  cout<<"Dodano wierzcholki"<<endl;
-  polacz();
-  return true;
-}
-
-
-bool test_grafu::run(){
-
-  // for(int i=0;i<g->size();i++){
-  //   g->sasiadujace_krawedzie(i);  
-  // }
-  // g->dodaj_krawedz(1,4,1);
-  // cout<<"Dodano krawedz"<<endl;
-  // cout<<"--OGOLEM--"<<endl;
-  // for(int i=0;i<g->size();i++){
-  //   g->sasiadujace_krawedzie(i);  
-  // }
-
-  
-  BFS(0);
-
-  // cout<<"counter= "<<counter<<endl;
-  // cout<<"g.size()= "<<g->size()<<endl;
-  // if(counter==g->size())
-  //   {cout<<"Graf spojny counter==g.size()"<<endl;}
-  // else
-  //   {cout<<"Graf niespojny counter!=g.size()"<<endl;}
-  // cout<<"ODWIEDZONE:"<<endl;
-  // for(int i=1;i<g->size()+1;i++) {
-  //   if(odwiedzony[i-1]) cout<<i-1<<"  ";
-  //   if(i%10==0) cout<<endl;}
-   return true;
-}
-
-
-#endif

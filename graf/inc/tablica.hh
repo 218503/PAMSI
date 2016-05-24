@@ -93,6 +93,7 @@ private:
   typ *wsk=NULL; /*!< Tablica do ktorej beda zapisywane elementy. */
   unsigned int l_elementow=0; /*!< Liczba elementow w tablicy. */
   unsigned int rozmiar_tablicy=5; /*!< Rozmiar zaalokowanej pamieci.*/
+  unsigned int poczatek_tablicy=0;
 public:
   /*!
    * \brief Konstruktor bezparametryczny.
@@ -205,10 +206,10 @@ void tab<typ>::push_back(typ element){
 	typ *tablica=NULL; //tablica pomocnicza 
 	int j;
 	tablica=new typ[l_elementow];
-	for(j=0;j<l_elementow;j++){ tablica[j]=wsk[j];}
+	for(j=poczatek_tablicy;j<l_elementow;j++){ tablica[j]=wsk[j];}
 	delete [] wsk;
        	wsk=new typ[l_elementow+1];
-	for(j=0;j<l_elementow;j++){ wsk[j]=tablica[j]; }
+	for(j=poczatek_tablicy;j<l_elementow;j++){ wsk[j]=tablica[j]; }
 	delete [] tablica;
 	wsk[l_elementow]=element;
    	l_elementow++;
@@ -220,28 +221,29 @@ template <class typ>
 void tab<typ>::push_back_x2(typ element){
   typ *tablica=NULL; //tablica pomocnicza 
   int j;
-    if(l_elementow<rozmiar_tablicy){
-      wsk[l_elementow]=element;
-      l_elementow++;
-    }
-    else { 
+     // if(l_elementow<rozmiar_tablicy){
+     //   wsk[l_elementow]=element;
+     //   l_elementow++;
+     // }
+  // else {
+      
       if(l_elementow<rozmiar_tablicy){
 	wsk[l_elementow]=element;
 	l_elementow++;
       }
       else{
 	tablica=new typ[l_elementow];
-	for(j=0;j<l_elementow;j++){ tablica[j]=wsk[j];}
+	for(j=poczatek_tablicy;j<l_elementow;j++){ tablica[j]=wsk[j];}
 	delete [] wsk;
 	rozmiar_tablicy*=2;
 	wsk=new typ[rozmiar_tablicy];
-	for(j=0;j<l_elementow;j++){
+	for(j=poczatek_tablicy;j<l_elementow;j++){
 	  wsk[j]=tablica[j]; 
 	}
 	wsk[l_elementow]=element;
 	l_elementow++;
       }
-    }
+      //}
 }
 
 
@@ -263,11 +265,11 @@ void tab<typ>::push_back_fast(typ element){
    }
    else{
      tablica=new typ[l_elementow];
-     for(j=0;j<l_elementow;j++){ tablica[j]=wsk[j];}
+     for(j=poczatek_tablicy;j<l_elementow;j++){ tablica[j]=wsk[j];}
      rozmiar_tablicy+=100;
      delete [] wsk;
      wsk=new typ[rozmiar_tablicy];
-     for(j=0;j<l_elementow;j++){
+     for(j=poczatek_tablicy;j<l_elementow;j++){
        wsk[j]=tablica[j]; 
      }	       
      wsk[l_elementow]=element;
@@ -282,13 +284,13 @@ void tab<typ>::insert(typ element, int pozycja){
   typ *tablica=new typ[rozmiar_tablicy+1];
   int i;
   if(pozycja<=rozmiar_tablicy){
-    for(i=0;i<rozmiar_tablicy;i++){
+    for(i=poczatek_tablicy;i<rozmiar_tablicy;i++){
       tablica[i]=wsk[i];
     }
     delete [] wsk;
     wsk=new typ[rozmiar_tablicy+1];
     rozmiar_tablicy++;
-    for(i=0;i<pozycja;i++){
+    for(i=poczatek_tablicy;i<pozycja;i++){
       wsk[i]=tablica[i];}
     wsk[pozycja]=element;
     for(i=pozycja+1;i<rozmiar_tablicy;i++){
@@ -302,13 +304,17 @@ void tab<typ>::insert(typ element, int pozycja){
 //usuwanie elementu z poczatku tablicy bez zmieniania zaalokowanej pamieci
 template <class typ>
 typ tab<typ>::pop_front(){
-  int i;
-  typ front=wsk[0];
-  l_elementow-=1;
-  for(i=0;i<l_elementow;i++){
-    wsk[i]=wsk[i+1];
+  //int i;
+  typ front;
+  if(poczatek_tablicy<=l_elementow-1){
+    front=wsk[poczatek_tablicy];
+    poczatek_tablicy++;
   }
-  //l_elementow-=1;
+  // l_elementow-=1;
+  // for(i=0;i<l_elementow;i++){
+  //   wsk[i]=wsk[i+1];
+  // }
+
   return front;
 }
 
@@ -340,12 +346,12 @@ typ tab<typ>::pop_0(int pozycja){
 
 template <class typ>
 typ tab<typ>::return_value(int x){
-  return wsk[x];
+  return wsk[x+poczatek_tablicy];
 }
 
 template <class typ>
 int tab<typ>::size(){
-  return l_elementow;
+  return l_elementow-poczatek_tablicy;
 }
 
 //usuwaine tablicy, zwalnianie pamięci
@@ -362,7 +368,7 @@ void tab<typ>::remove(){
 template <class typ>
 void tab<typ>::display(){
   int j;
-  for(j=0;j<l_elementow;j++){
+  for(j=poczatek_tablicy;j<l_elementow;j++){
     if(j<l_elementow) cout<<wsk[j]<<"  "; 
     if(j%15==0)   cout<<endl;
   }
@@ -372,14 +378,14 @@ void tab<typ>::display(){
 template <class typ>
 bool tab<typ>::is_empty(){
   
-  if(l_elementow==0) { return true;}
+  if(l_elementow-poczatek_tablicy==0) { return true;}
   return false;
 }
 
 template <class typ>
 bool tab<typ>::search(int s){
   
-  for(int i=0;i<l_elementow;i++){
+  for(int i=poczatek_tablicy;i<l_elementow;i++){
     if(wsk[i]==s) {return true;
     }
   }
@@ -424,9 +430,9 @@ void tab<typ>::QS(int left, int right){
 template <class typ>
 void tab<typ>::BS(){
   int i,j;
-  for(i=0;i<l_elementow;i++)
+  for(i=poczatek_tablicy;i<l_elementow;i++)
     {
-      for(j=0;j<(l_elementow-1);j++){
+      for(j=poczatek_tablicy;j<(l_elementow-1);j++){
 	if(wsk[j]>wsk[j+1]){
 	  swap(j,j+1);
 	}

@@ -7,6 +7,7 @@ public:
 
   virtual bool run()=0;
   
+  virtual void remove()=0;
 };
 
 
