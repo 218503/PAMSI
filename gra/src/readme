@@ -1,1 +1,5 @@
+Do poprawienia w main.cpp:
+-pozbycie się zmiennych globalnych
+-powtarzające się fragmenty kodu zmienić na funkcję
 
+Problemy z obsługą GTK+.
