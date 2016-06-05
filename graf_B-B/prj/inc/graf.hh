@@ -1,6 +1,7 @@
 #ifndef GRAF_HH
 #define GRAF_HH
 
+#include <iostream>
 #include "lista.hh"
 #include "tablica.hh"
 #include "kolejka.hh"
@@ -19,7 +20,7 @@ using namespace std;
 class krawedz{
 public:
   int waga=1; /*!< Waga krawedzi. */
-  int kierunek; /*!< Wierzcholek do ktorego prowadzi krawedz. */
+  int kierunek=0; /*!< Wierzcholek do ktorego prowadzi krawedz. */
   krawedz & operator = (const int & x);
 
   krawedz(){
@@ -71,6 +72,7 @@ public:
    */
   virtual int size()=0;
 
+  virtual int waga_krawedzi(int,int )=0;
   /*!
    * \brief 
    */
@@ -127,6 +129,8 @@ public:
    *
    */
   virtual int size();
+
+  virtual int waga_krawedzi(int nr,int i );
 
   /*!
    * \brief 
@@ -201,10 +205,19 @@ int graf::sasiad(int nr, int i){
   return k.kierunek;
 }
 
+int graf::waga_krawedzi(int nr,int i ){
+  krawedz k=w[nr].check_value(i);
+  return k.waga;
+}
 
 int graf::size(){
   return lw;
 }
+
+
+
+
+
 
 
 
@@ -215,9 +228,10 @@ int graf::size(){
 class test_grafu : public irunable{
 private:
   igraf *g;
-  int liczba_wierzcholkow=0,liczba_krawedzi=0;
+  int liczba_wierzcholkow=0,liczba_krawedzi=0,poczatek=0,koniec=0,suma=0;
   istos<int> *s=new stos<int>;//(liczba_wierzcholkow);
-  ikolejka<int> *k;
+  ikolejka<int> *k=new kolejka<int>;
+  ilista<int> *sciezka;
   bool *odwiedzony;
   // int counter=0;
 public:
@@ -251,21 +265,30 @@ public:
    */
   virtual void remove();
 
-  /*!
-   * \brief Przejscie DFS.
-   *
-   * \param[in] o wierzcholek poczatkowy.
-   */
+  // /*!
+  //  * \brief Przejscie DFS.
+  //  *
+  //  * \param[in] o wierzcholek poczatkowy.
+  //  */
 
 
-  int DFS(int o);
-  /*!
-   * \brief Przejscie BFS.
-   *
-   * param[in] o wierzcholek poczatkowy.
-   */
-  int BFS(int o);
+  // int DFS(int o);
+  // /*!
+  //  * \brief Przejscie BFS.
+  //  *
+  //  * param[in] o wierzcholek poczatkowy.
+  //  */
+  // int BFS(int o);
  
+  /*!
+   * \brief Branch and Bound.
+   *
+   * param[in] p wierzcholek z ktorego wychodzimy.
+   * param[in] k wierzcholek do ktorego chcemy dojsc.
+   */
+  int BB(int p,int k);
+
+
   // a liczba wierzcholkow, b liczba krawedzi dla wierzcholka
   /*!
    * \brief 
@@ -276,7 +299,8 @@ public:
     g=new graf(liczba_wierzcholkow);
     odwiedzony=new bool[liczba_wierzcholkow];
     for(int i=0;i<liczba_wierzcholkow;i++) odwiedzony[i]=false;
-    k=new kolejka<int>[liczba_wierzcholkow];
+    k=new kolejka<int>(liczba_wierzcholkow);
+    sciezka=new lista<int>(liczba_wierzcholkow);
   }
 };
 
@@ -304,35 +328,28 @@ void test_grafu::polacz(){
   }
 }
 
-int test_grafu::DFS(int o){
-  int i=0;
-  odwiedzony[o]=true;
-  //counter++;
-  // cout<<"Odwiedzony "<<o<<endl;
-  for(i=0;i<g->liczba_sasiadow(o);i++){
-    s->push(g->sasiad(o,i));
-  }
-  while(!s->empty()){
-    i=s->pop();
-    if(!odwiedzony[i]) DFS(i);
-  }
-  return 0;
-}
 
-int test_grafu::BFS(int o){
-  int i;
-  //cout<<"ODWIEDZONY "<<o<<endl;
-  //counter++;
-  odwiedzony[o]=true;
-  k->push(o);
-  for(i=0;i<g->liczba_sasiadow(o);i++){
-    if(!odwiedzony[g->sasiad(o,i)]) k->push(g->sasiad(o,i));
+int test_grafu::BB(int p,int kon){
+  int x,i,n=10;
+  odwiedzony[p]=true;
+  k->push(p);
+  x=10;
+  for(i=0;i<g->liczba_sasiadow(p);i++){
+    if((!odwiedzony[g->sasiad(p,i)])&&(x>g->waga_krawedzi(p,i))){
+      n=g->sasiad(p,i);
+      x=g->waga_krawedzi(p,i);
+    }
   }
+  suma+=x;
+  k->push(n);
+  sciezka->push_back(n);
   while(!k->empty()){
-    k->pop();
-    if(!odwiedzony[k->check_value(0)]){BFS(k->check_value(0));}
-  }
-  return 0;
+    
+    if(k->pop()==kon) return suma;
+    if((!odwiedzony[k->check_value(0)])&&(k->check_value(0)!=kon)) BB(k->check_value(0),kon);
+    
+    }
+  return suma;
 }
 
 bool test_grafu::prepare(){
@@ -356,9 +373,15 @@ bool test_grafu::run(){
   //   g->sasiadujace_krawedzie(i);  
   // }
 
-  
-  DFS(0);
+  poczatek=rand()%(liczba_wierzcholkow);
+  do{
+    koniec=rand()%(liczba_wierzcholkow);
+  }while(koniec==poczatek);
 
+  cout<<"poczatek: "<<poczatek<<" koniec: "<<koniec<<endl;
+  cout<<"Dlugosc sciezki: "<<BB(poczatek,koniec)<<endl;
+  cout<<"SCIEZKA"<<endl;
+  sciezka->display();
   // cout<<"counter= "<<counter<<endl;
   // cout<<"g.size()= "<<g->size()<<endl;
   // if(counter==g->size())
@@ -426,6 +449,40 @@ bool operator==(const krawedz &k, const int &x){
 
 
 #endif
+
+
+// int test_grafu::DFS(int o){
+//   int i=0;
+//   odwiedzony[o]=true;
+//   //counter++;
+//   // cout<<"Odwiedzony "<<o<<endl;
+//   for(i=0;i<g->liczba_sasiadow(o);i++){
+//     s->push(g->sasiad(o,i));
+//   }
+//   while(!s->empty()){
+//     i=s->pop();
+//     if(!odwiedzony[i]) DFS(i);
+//   }
+//   return 0;
+// }
+
+// int test_grafu::BFS(int o){
+//   int i;
+//   //cout<<"ODWIEDZONY "<<o<<endl;
+//   //counter++;
+//   odwiedzony[o]=true;
+//   k->push(o);
+//   for(i=0;i<g->liczba_sasiadow(o);i++){
+//     if(!odwiedzony[g->sasiad(o,i)]) k->push(g->sasiad(o,i));
+//   }
+//   while(!k->empty()){
+//     k->pop();
+//     if(!odwiedzony[k->check_value(0)]){BFS(k->check_value(0));}
+//   }
+//   return 0;
+// }
+
+
 
 // wierzcholek & wierzcholek::operator = (const int & x){
 //   zawartosc=x;
